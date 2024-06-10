@@ -78,7 +78,7 @@ Vagrant.configure("2") do |config|
   cpuCore = 2
   memory = 2
   hostname = "DEBIAN-12-001"
-  username = "tristiisch"
+  username = "president"
   password = "P@ssword!"
   networkMac = ("%02x" % (rand(128) * 2)) + ":" + (1..5).map { "%02x" % rand(256) }.join(":")
   # FC:7C:FF:5D:6F:E7
@@ -168,8 +168,8 @@ Vagrant.configure("2") do |config|
 
     vmware.vmx["ethernet0.vnet"] = "VMnet8"
     vmware.vmx["ethernet0.connectiontype"] = "custom"
-    # vmware.vmx["ethernet0.displayName"] = "VMnet8"
-    vmware.vmx["ethernet0.virtualdev"] = "e1000"
+    vmware.vmx["ethernet0.displayName"] = "VMnet8"
+    vmware.vmx["ethernet0.virtualdev"] = "e1000e"
 
     # Enable Virtualize usage in VM - Need to disable Hyper-V on Host to work
     vmware.vmx["vhv.enable"] = false
