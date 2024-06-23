@@ -1,0 +1,84 @@
+Vagrant.configure("2") do |main_config|
+  # Number of VMs to be created
+  num_vms = 3
+  
+  box = "packer_DEBIAN-12_vmware.box"
+  cpuCore = 2
+  memory = 2
+  username = "president"
+  password = "P@ssword!"
+  local_script = "./docker_install.sh"
+  remote_script = "/tmp/docker_install.sh"
+  local_ssh_public_key = "../Ansible/data/keys/id_rsa.pub"
+  remote_public_key = "/tmp/id_rsa.pub"
+  remote_home_dir = "/home/#{username}/.ssh"
+
+  (1..num_vms).each do |i|
+    hostname = "DOCKER-00#{i}"
+    main_config.vm.define hostname do |config|
+      config.vm.box = box
+    
+      config.vm.hostname = hostname
+      config.vm.communicator = "ssh"
+      config.ssh.username = username
+      config.ssh.password = password
+      config.ssh.keep_alive = true
+      config.ssh.disable_deprecated_algorithms = true
+    
+      config.vm.synced_folder "./vagrant/", "/vagrant", disabled: true
+  
+      # Docker installation
+      config.vm.provision "file", source: local_script, destination: remote_script
+      config.vm.provision "shell", inline: <<-SHELL
+		    set -eux
+        chmod +x #{remote_script}
+        #{remote_script}
+        rm #{remote_script}
+      SHELL
+
+      # Copy SSH public key to VM
+      config.vm.provision "file", source: local_ssh_public_key, destination: remote_public_key
+      config.vm.provision "shell", inline: <<-SHELL
+		    set -eux
+        mkdir -p #{remote_home_dir}
+        cat #{remote_public_key} >> #{remote_home_dir}/authorized_keys
+        rm #{remote_public_key}
+        chmod 600 #{remote_home_dir}/authorized_keys
+        chown #{username}:#{username} -R #{remote_home_dir}
+      SHELL
+
+      config.vm.provider "vmware_desktop" do |vmware|
+        vmware.gui = true
+        # VMWare link or deep copy
+        vmware.linked_clone = false
+        # VMWare name on library
+        vmware.vmx["displayName"] = hostname
+    
+        # Number of CPU cores
+        vmware.vmx["cpuid.coresPerSocket"] = cpuCore
+        # Number of CPUs (need to multiply the value by 4)
+        vmware.vmx["numvcpus"] = (1 * 4)
+        # Memory in MB (var memory is in GB, then we convert to MB)
+        vmware.vmx["memsize"] = memory * 1024
+    
+        vmware.vmx["ethernet0.vnet"] = "VMnet8"
+        vmware.vmx["ethernet0.connectiontype"] = "custom"
+        vmware.vmx["ethernet0.displayName"] = "VMnet8"
+        vmware.vmx["ethernet0.virtualdev"] = "e1000e"
+		    vmware.vmx["ethernet0.pcislotnumber"] = "160"
+    
+        # Enable Virtualize usage in VM - Need to disable Hyper-V on Host to work
+        vmware.vmx["vhv.enable"] = false
+    
+        # Virtualize CPU performance counter
+        vmware.vmx["vpmc.enable"] = false
+    
+        # Allow shared folders between Host & Guest
+        vmware.vmx["isolation.tools.hgfs.disable"] = true
+    
+        # Unmount the default HGFS mount point within the guest
+        # vmware.unmount_default_hgfs = true
+      end
+    end
+  end
+end

@@ -117,7 +117,6 @@ build {
     keep_input_artifact = false
     output = "packer_{{.BuildName}}_{{.Provider}}.box"
     provider_override = "vmware"
-
-	  compression_level = 9
+	compression_level = 9
   }
 }

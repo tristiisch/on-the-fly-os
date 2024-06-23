@@ -3,3 +3,4 @@ packer_cache
 output-*
 packer_*
 *.iso
+.local

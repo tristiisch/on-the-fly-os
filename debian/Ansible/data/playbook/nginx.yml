@@ -1,0 +1,6 @@
+- name: Configure Debian servers
+  hosts: nginx_servers
+  become: yes
+  roles:
+    - common
+    - nginx

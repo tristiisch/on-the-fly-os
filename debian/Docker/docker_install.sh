@@ -20,10 +20,22 @@ sudo curl -fsSL "https://download.docker.com/linux/$ID/gpg" -o /etc/apt/keyrings
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 
 # Add the repository to Apt sources
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] "https://download.docker.com/linux/$ID" \
-  $(lsb_release -cs) stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+arch=$(dpkg --print-architecture)
+os_version_name=$(lsb_release -cs)
+echo "deb [arch=$arch signed-by=/etc/apt/keyrings/docker.asc] \"https://download.docker.com/linux/$ID\" $os_version_name stable" \
+	| sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt update
 
+# Install Docker
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Create group docker
+# All users in this group can use Docker
+if ! getent group docker > /dev/null; then
+    sudo groupadd docker
+fi
+
+# Allow current user to use Docker
+CURRENT_USER=$(whoami)
+export CURRENT_USER
+sudo usermod -aG docker "$CURRENT_USER"
