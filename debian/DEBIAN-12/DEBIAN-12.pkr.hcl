@@ -22,7 +22,7 @@ locals {
     // Usage of keyboard enhancements
     "mks.keyboardFilter" = "allow"
     "sata1.present": true
-	# Interface name will be ens33
+  # Interface name will be ens33
     // "ethernet0.pciSlotNumber": "33"
   }
   // If UEFI is enabled, override default settings
@@ -65,8 +65,7 @@ source "vmware-iso" "DEBIAN-12" {
   disk_adapter_type = "nvme"
   disk_type_id = 0
 
-//   network = "VMnet8"
-  // network = "hostonly"
+  // network = "VMnet8"
   network = "nat"
   network_adapter_type = "e1000e"
 
@@ -94,29 +93,26 @@ source "vmware-iso" "DEBIAN-12" {
   vmx_remove_ethernet_interfaces = true
   vmx_data = local.final_vmx_data
   vmx_data_post = {
-		"sata0.present" = false
-		"sata1.present" = false
-	}
+    "sata0.present" = false
+    "sata1.present" = false
+  }
 
-  // http_directory = "http"
   boot_command = local.boot_keys
   boot_wait = local.boot_keys_waiting
 
   // Command to shut down the system
-//   shutdown_timeout = "1h"
+  // shutdown_timeout = "1h"
   shutdown_command = "sudo shutdown -h now"
   skip_compaction = false
 }
 
-// Build configuration
 build {
   sources = ["source.vmware-iso.DEBIAN-12"]
 
-  // Export as a Vagrant box
   post-processor "vagrant" {
     keep_input_artifact = false
     output = "packer_{{.BuildName}}_{{.Provider}}.box"
     provider_override = "vmware"
-	compression_level = 9
+    compression_level = 9
   }
 }

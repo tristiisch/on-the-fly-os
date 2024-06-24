@@ -30,7 +30,7 @@ Vagrant.configure("2") do |main_config|
       # Docker installation
       config.vm.provision "file", source: local_script, destination: remote_script
       config.vm.provision "shell", inline: <<-SHELL
-		    set -eux
+        set -eux
         chmod +x #{remote_script}
         #{remote_script}
         rm #{remote_script}
@@ -39,7 +39,7 @@ Vagrant.configure("2") do |main_config|
       # Copy SSH public key to VM
       config.vm.provision "file", source: local_ssh_public_key, destination: remote_public_key
       config.vm.provision "shell", inline: <<-SHELL
-		    set -eux
+        set -eux
         mkdir -p #{remote_home_dir}
         cat #{remote_public_key} >> #{remote_home_dir}/authorized_keys
         rm #{remote_public_key}
@@ -65,7 +65,7 @@ Vagrant.configure("2") do |main_config|
         vmware.vmx["ethernet0.connectiontype"] = "custom"
         vmware.vmx["ethernet0.displayName"] = "VMnet8"
         vmware.vmx["ethernet0.virtualdev"] = "e1000e"
-		    vmware.vmx["ethernet0.pcislotnumber"] = "160"
+        vmware.vmx["ethernet0.pcislotnumber"] = "160"
     
         # Enable Virtualize usage in VM - Need to disable Hyper-V on Host to work
         vmware.vmx["vhv.enable"] = false
