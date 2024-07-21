@@ -1,6 +1,6 @@
 Vagrant.configure("2") do |main_config|
   # Number of VMs to be created
-  num_vms = 3
+  num_vms = 6
   
   box = "packer_DEBIAN-12_vmware.box"
   cpuCore = 2
@@ -37,15 +37,15 @@ Vagrant.configure("2") do |main_config|
       SHELL
 
       # Copy SSH public key to VM
-      config.vm.provision "file", source: local_ssh_public_key, destination: remote_public_key
-      config.vm.provision "shell", inline: <<-SHELL
-        set -eux
-        mkdir -p #{remote_home_dir}
-        cat #{remote_public_key} >> #{remote_home_dir}/authorized_keys
-        rm #{remote_public_key}
-        chmod 600 #{remote_home_dir}/authorized_keys
-        chown #{username}:#{username} -R #{remote_home_dir}
-      SHELL
+    #   config.vm.provision "file", source: local_ssh_public_key, destination: remote_public_key
+    #   config.vm.provision "shell", inline: <<-SHELL
+    #     set -eux
+    #     mkdir -p #{remote_home_dir}
+    #     cat #{remote_public_key} >> #{remote_home_dir}/authorized_keys
+    #     rm #{remote_public_key}
+    #     chmod 600 #{remote_home_dir}/authorized_keys
+    #     chown #{username}:#{username} -R #{remote_home_dir}
+    #   SHELL
 
       config.vm.provider "vmware_desktop" do |vmware|
         vmware.gui = true

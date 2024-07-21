@@ -1,24 +1,30 @@
-cpuCore = 4
-memory = 2
-hostname = "ANSIBLE-001"
+$cpuCore = 4
+$memory = 2
+$hostname = "ANSIBLE-001"
 
-template = File.read("../DEBIAN-12/Vagrantfile.template")
+template = File.read("../DEBIAN-12/Vagrantfile")
 eval(template)
 
 shared_folder_local = '\\\\wsl.localhost\Ubuntu\home\tristiisch\dev\devops\ansible'
 shared_folder_remote = "/opt/data"
 shared_folder_name = "data"
-shared_folder_owner = username
-shared_folder_group = username
+shared_folder_owner = $username
+shared_folder_group = $username
 shared_folder_mask = 077
+local_script = "./ansible_install.sh"
+remote_script = "/tmp/ansible_install.sh"
 
 SKIP_PROVISIONERS = true
 
 Vagrant.configure("2") do |config|
-
+  
+  # Ansible installation
+  config.vm.provision "file", source: local_script, destination: remote_script
   config.vm.provision "shell", inline: <<-SHELL
-  	sudo apt update
-    sudo apt install -y ansible make
+    set -eux
+    chmod +x #{remote_script}
+    #{remote_script}
+    rm #{remote_script}
   SHELL
 
   config.vm.provider "vmware_desktop" do |vmware, override|
@@ -29,5 +35,6 @@ Vagrant.configure("2") do |config|
       group: shared_folder_group,
       mount_options: ["umask=#{shared_folder_mask}"]
 
+	vmware.vmx["sharedFolder0.expiration"] = "permanent"
   end
 end

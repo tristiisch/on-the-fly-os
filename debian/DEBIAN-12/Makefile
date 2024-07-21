@@ -21,9 +21,6 @@ deploy-update:
 deploy:
 	@vagrant up --timestamp --provider vmware_desktop
 
-deploy-ask:
-	@set "ASK=true" && vagrant up --timestamp --provider vmware_desktop
-
 deploy-delete:
 	@vagrant destroy --timestamp --force
 
