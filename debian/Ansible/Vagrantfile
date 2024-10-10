@@ -35,6 +35,8 @@ Vagrant.configure("2") do |config|
       group: shared_folder_group,
       mount_options: ["umask=#{shared_folder_mask}"]
 
-	vmware.vmx["sharedFolder0.expiration"] = "permanent"
+	# vmware.vmx["sharedFolder0.expiration"] = "never"
+    # Allow shared folders between Host & Guest
+    vmware.vmx["isolation.tools.hgfs.disable"] = false
   end
 end

@@ -156,6 +156,6 @@ Vagrant.configure("2") do |config|
     # Virtualize CPU performance counter
     vmware.vmx["vpmc.enable"] = false
     # Allow shared folders between Host & Guest
-    vmware.vmx["isolation.tools.hgfs.disable"] = true
+    vmware.vmx["isolation.tools.hgfs.disable"] = false
   end
 end

@@ -52,7 +52,7 @@ Vagrant.configure("2") do |config|
     vmware.vmx["vpmc.enable"] = false
 
     # Allow shared folders between Host & Guest
-    vmware.vmx["isolation.tools.hgfs.disable"] = true
+    vmware.vmx["isolation.tools.hgfs.disable"] = false
 
     # Unmount the default HGFS mount point within the guest
     # vmware.unmount_default_hgfs = true
