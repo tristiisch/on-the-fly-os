@@ -16,19 +16,19 @@ if [ -z "${VERSION_CODENAME+x}" ]; then
 	echo "Error: The version codename for $ID could not be found."
 	exit 1
 fi
-os_version_name=$VERSION_CODENAME
 
 # Add Docker's official GPG key
 sudo apt update
 sudo apt install -y ca-certificates curl
 sudo install -m 0755 -d /etc/apt/trusted.gpg.d
-sudo curl -fsSL "https://download.docker.com/linux/$ID/gpg" \
-	| gpg --dearmor \
-	| sudo tee /etc/apt/keyrings/docker.gpg > /dev/null
+curl -fsSL "https://download.docker.com/linux/$ID/gpg" \
+    | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
 # Add the repository to Apt sources
 arch=$(dpkg --print-architecture)
-echo "deb [arch=$arch] \"https://download.docker.com/linux/$ID\" $os_version_name stable" \
+os_version_name=$VERSION_CODENAME
+echo "deb [arch=$arch  signed-by=/etc/apt/keyrings/docker.gpg] \"https://download.docker.com/linux/$ID\" $os_version_name stable" \
 	| sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt update
 
